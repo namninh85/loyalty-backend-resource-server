@@ -51,22 +51,37 @@ public class LoginController {
 			userRepository.save(newUser);
 			isCreateNew = 1;
 		}
+		try {
+			LoginResponse loginResponse = lodaRestController.authenticateUser(loginRequest);
 
-		LoginResponse loginResponse = lodaRestController.authenticateUser(loginRequest);
-
-		int error = (isCreateNew == 1) ? LOGIN_NEW : LOGIN_SUCCESSFUL;
-		Map<String, Object> data = new HashMap<String, Object>() {
-			{
-				put("token", loginResponse.getAccessToken());
-			}
-		};
-		Map<String, Object> out = new HashMap<String, Object>() {
-			{
-				put("error", error);
-				put("data", data);
-			}
-		};
-		return new ResponseEntity<>(out, HttpStatus.OK);
+			int error = (isCreateNew == 1) ? LOGIN_NEW : LOGIN_SUCCESSFUL;
+			Map<String, Object> data = new HashMap<String, Object>() {
+				{
+					put("token", loginResponse.getAccessToken());
+				}
+			};
+			Map<String, Object> out = new HashMap<String, Object>() {
+				{
+					put("error", error);
+					put("data", data);
+				}
+			};
+			return new ResponseEntity<>(out, HttpStatus.OK);
+		}
+		catch (Exception e) {
+			Map<String, Object> data = new HashMap<String, Object>() {
+				{
+					put("message", "Login Fail");
+				}
+			};
+			Map<String, Object> out = new HashMap<String, Object>() {
+				{
+					put("error", LOGIN_FAIL);
+					put("data", data);
+				}
+			};
+			return new ResponseEntity<>(out, HttpStatus.UNAUTHORIZED);
+		}
 
 	}
 
