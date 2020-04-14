@@ -181,6 +181,7 @@ public class ApiUserController {
 			
 			aContact.setCustomerId(currentUser.getId());
 			aContact.setEmail(currentUser.getUsername());
+			aContact.setUserId(currentUser.getId());
 
 			if (profileDTO.get("firstName") != null) {
 				aCustomer.setFirstName(profileDTO.get("firstName").toString());
