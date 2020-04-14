@@ -34,6 +34,8 @@ public class Contact implements java.io.Serializable {
 	@Column(name = "source_by__c")
 	private String sourceBy;
 	private String sfid;
+	@Column(name = "extenal_user_id__c")
+	private Long userId;
 		
 	public Contact() {
 	}
@@ -125,8 +127,13 @@ public class Contact implements java.io.Serializable {
 	public void setSfid(String sfid) {
 		this.sfid = sfid;
 	}
-	
-	
-	
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 	
 }
