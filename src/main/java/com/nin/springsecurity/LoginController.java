@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,9 @@ public class LoginController {
 	@Autowired
 	LodaRestController lodaRestController;
 	
+	@Autowired
+    PasswordEncoder passwordEncoder;
+	
 	@PostMapping("/login-create")
 	ResponseEntity<Map<String, Object>> clientLoginCreate(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -46,7 +50,7 @@ public class LoginController {
 		if (user == null) {
 			User newUser = new User();
 			newUser.setUsername(loginRequest.getUsername());
-			newUser.setPassword(loginRequest.getUsername());
+			newUser.setPassword(passwordEncoder.encode(loginRequest.getPassword()));
 			newUser.setCreated(null);
 			userRepository.save(newUser);
 			isCreateNew = 1;
