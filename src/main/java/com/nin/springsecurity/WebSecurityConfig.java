@@ -68,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable().authorizeRequests().antMatchers("/auth/login", "/auth/login-create","/auth/client/validate", "/api/public/**").permitAll() // Cho phép tất cả
+		http.cors().and().csrf().disable().authorizeRequests().antMatchers("/auth/login", "/auth/login-create", "/auth/resetpassword","/auth/client/validate", "/api/public/**").permitAll() // Cho phép tất cả
 																										// mọi người
 																										// truy cập vào
 																										// địa chỉ này
