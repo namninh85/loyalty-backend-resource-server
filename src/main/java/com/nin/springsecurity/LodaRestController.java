@@ -9,8 +9,10 @@ package com.nin.springsecurity;
  *******************************************************/
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +28,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nin.springsecurity.jwt.JwtTokenProvider;
 import com.nin.springsecurity.payload.LoginRequest;
 import com.nin.springsecurity.payload.LoginResponse;
 import com.nin.springsecurity.payload.RandomStuff;
+import com.nin.springsecurity.user.AccessToken;
+import com.nin.springsecurity.user.AccessTokenRepository;
 import com.nin.springsecurity.user.CustomUserDetails;
 import com.nin.springsecurity.user.User;
 import com.nin.springsecurity.user.UserRepository;
@@ -56,6 +62,9 @@ public class LodaRestController {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+	private AccessTokenRepository accessTokenRepository;
 
     @PostMapping("/login")
     public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -74,6 +83,11 @@ public class LodaRestController {
 
         // Trả về jwt cho người dùng.
         String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+        
+        AccessToken aT = new AccessToken();
+        aT.setToken(jwt);
+        accessTokenRepository.save(aT);
+		
         return new LoginResponse(jwt);
     }
 
@@ -115,6 +129,26 @@ public class LodaRestController {
             responseMap.put("error", -1);
             return new ResponseEntity<>(responseMap, HttpStatus.BAD_REQUEST);
         }
+    }
+    
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public void logout(HttpServletRequest request) {
+		String token = getJwtFromRequest(request);
+		List<AccessToken> aT = accessTokenRepository.findByToken(token);
+		if(aT != null) {
+			accessTokenRepository.deleteAll(aT);
+		}
+		
+	}
+	
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        // Kiểm tra xem header Authorization có chứa thông tin jwt không
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
 }

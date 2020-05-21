@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nin.springsecurity.payload.LoginRequest;
 import com.nin.springsecurity.payload.LoginResponse;
+import com.nin.springsecurity.user.AccessToken;
+import com.nin.springsecurity.user.AccessTokenRepository;
 import com.nin.springsecurity.user.User;
 import com.nin.springsecurity.user.UserRepository;
 
@@ -37,7 +39,7 @@ public class LoginController {
 
 	@Autowired
 	private UserRepository userRepository;
-
+	
 	@Autowired
 	LodaRestController lodaRestController;
 	
@@ -94,11 +96,6 @@ public class LoginController {
 
 	}
 
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	@ResponseStatus(HttpStatus.OK)
-	public void logout(HttpServletRequest request) {
-
-	}
 	
 	@PostMapping("/resetpassword")
 	ResponseEntity<Map<String, Object>> resetPassword(HttpServletRequest httpServletRequest, @Valid @RequestBody LoginRequest loginRequest) {
@@ -139,6 +136,8 @@ public class LoginController {
 		}
 
 	}
+	
+	
 	
 	private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
